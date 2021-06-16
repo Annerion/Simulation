@@ -2,23 +2,45 @@
 // Make an instance of two and place it on the page.
 
 var two = new Two({
+        width:1000,
+        height:1000,
         fullscreen: true,
         autostart: true
 }).appendTo(document.body);
 
-var rectangle = two.makeRectangle(72, 100, 50, 50);
+var x= 250;
+var y= 250;
+var side= 300;
 
-//circle.fill = '#FF8000';
-//circle.stroke = 'orangered'; // Accepts all valid css color
-//circle.linewidth = 5;
 
+var rectangle = two.makeRectangle(x, y, side, side);
+rectangle.noFill();
+rectangle.stroke='white';
+
+
+//source 1, poitioned in top left
+var x1=x-side/2;
+var y1=y-side/2;
+
+//source 2, positioned in bottom right
+var x2=x+side/2;
+var y2=y+side/2;
+
+//timer, for the time dependency of the waves
+var t= two.frameCount;
+
+var pattern= two.makeGroup();
+
+for(i=x-side; i<x+side;  i++){
+        for(j=y-side; j<y+side; j++){
+                pattern.add(two.makeRectangle(i,j,1,1));
+        }
+}
+pattern.fill='blue';
+pattern.noStroke();
 two.update();
-var texture = two.makeTexture('https://i.imgur.com/DRmh6S9.jpg');
-
-rectangle.fill = texture;
-texture.scale = 0.125;
+two.pause();
 
 
-two.update();
 
 
