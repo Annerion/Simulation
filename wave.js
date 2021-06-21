@@ -32,10 +32,15 @@ var t= two.frameCount;
 //create a color grid to represent wave intensity
 var array= [];
 var s=10;
-var color;
 for(i=x-side; i<x+side;  i+=s){
         for(j=y-side; j<y+side; j+=s){
                 array[i*2*side+j]=two.makeRectangle(i+s/2,j+s/2,s,s);
+        }
+}
+//fill the color grid
+var color;
+for(i=x-side; i<x+side;  i+=s){
+        for(j=y-side; j<y+side; j+=s){
                 color=255+255*(Math.sin(i)+Math.sin(j))/2
                 array[i*2*side+j].fill="rgb(0,0,"+color+")";
         }
@@ -45,7 +50,6 @@ var pattern= two.makeGroup(array);
 //pattern.fill='blue';
 pattern.noStroke();
 two.update();
-two.pause();
 
 
 
