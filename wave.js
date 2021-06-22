@@ -12,6 +12,14 @@ var x= 500;
 var y= 500;
 var side= 300;
 
+// wavelength (lambda) in pixels
+var l= 20;
+
+// frequency, in waves per frame
+var f=0.5
+
+// wavespeed in pixels per frame
+var v=l*f;
 
 var rectangle = two.makeRectangle(x, y, 2*side, 2*side);
 rectangle.noFill();
@@ -26,8 +34,7 @@ var y1=y-side/2;
 var x2=x+side/2;
 var y2=y+side/2;
 
-//timer, for the time dependency of the waves
-var t= two.frameCount;
+
 
 //create a color grid to represent wave intensity
 var array= [];
@@ -37,20 +44,34 @@ for(i=x-side; i<x+side;  i+=s){
                 array[i*2*side+j]=two.makeRectangle(i+s/2,j+s/2,s,s);
         }
 }
+
 //fill the color grid
 var color;
-for(i=x-side; i<x+side;  i+=s){
-        for(j=y-side; j<y+side; j+=s){
-                color=255+255*(Math.sin(i)+Math.sin(j))/2
-                array[i*2*side+j].fill="rgb(0,0,"+color+")";
+//timer, for the time dependency of the waves
+var t= two.frameCount;
+
+two.bind('update', function(frameCount){
+        for(i=x-side; i<x+side;  i+=s){
+                for(j=y-side; j<y+side; j+=s){
+                        color=255+255*(getPhase(x1,y1,x,y,t)+getPhase(x2,y2,x,y,t))/2
+                        array[i*2*side+j].fill="rgb(0,0,"+color+")";
+                }
         }
-}
+});
+
 console.log("array made");
 var pattern= two.makeGroup(array);
 //pattern.fill='blue';
 pattern.noStroke();
-two.update();
 
 
+function distance(xs,ys,x,y){
+        return Math.sqrt((xs-x)**2+(ys-y)**2);
+}
 
+function getPhase(xs,ys,x,y,t){
+        return Math.sin(2*Math.PI*(distance(xs,ys,x,y)/l+f*t));
+}
+console.log(two.playing);
+two.play();
 
