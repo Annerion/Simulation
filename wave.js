@@ -16,7 +16,7 @@ var side= 300;
 var l= 20;
 
 // frequency, in waves per frame
-var f=0.5
+var f=0.1;
 
 // wavespeed in pixels per frame
 var v=l*f;
@@ -38,7 +38,7 @@ var y2=y+side/2;
 
 //create a color grid to represent wave intensity
 var array= [];
-var s=10;
+var s=5;
 for(i=x-side; i<x+side;  i+=s){
         for(j=y-side; j<y+side; j+=s){
                 array[i*2*side+j]=two.makeRectangle(i+s/2,j+s/2,s,s);
@@ -51,9 +51,11 @@ var color;
 var t= two.frameCount;
 
 two.bind('update', function(frameCount){
+        t=two.frameCount;
         for(i=x-side; i<x+side;  i+=s){
                 for(j=y-side; j<y+side; j+=s){
-                        color=255+255*(getPhase(x1,y1,x,y,t)+getPhase(x2,y2,x,y,t))/2
+                        color=255+255*(getPhase(x1,y1,i,j,t)+getPhase(x2,y2,i,j,t))/4;
+                        console.log(color);
                         array[i*2*side+j].fill="rgb(0,0,"+color+")";
                 }
         }
