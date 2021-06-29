@@ -38,12 +38,13 @@ var y2=y+side/2;
 
 //create a color grid to represent wave intensity
 var array= [];
-var s=7;
+var s=5;
 for(i=x-side; i<x+side;  i+=s){
         for(j=y-side; j<y+side; j+=s){
                 array[i*2*side+j]=two.makeRectangle(i+s/2,j+s/2,s,s);
         }
 }
+console.log("array made");
 
 //fill the color grid
 var color;
@@ -54,14 +55,14 @@ two.bind('update', function(frameCount){
         t=two.frameCount;
         for(i=x-side; i<x+side;  i+=s){
                 for(j=y-side; j<y+side; j+=s){
-                        color=255+255*(getPhase(x1,y1,i,j,t)+getPhase(x2,y2,i,j,t))/4;
-                        console.log(color);
+                        color=255+255*(getPhase(x1,y1,i,j,t)+getPhase(x2,y2,i,j,t))/5;
+                        //console.log(color);
                         array[i*2*side+j].fill="rgb(0,0,"+color+")";
                 }
         }
 });
 
-console.log("array made");
+
 var pattern= two.makeGroup(array);
 //pattern.fill='blue';
 pattern.noStroke();
