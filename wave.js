@@ -64,7 +64,7 @@ y2handle.fill='yellow';
 
 //create a color grid to represent wave intensity
 var array= [];
-var s=1;
+var s=7;
 for(i=x-side; i<x+side;  i+=s){
         for(j=y-side; j<y+side; j+=s){
                 array[i*2*side+j]=two.makeRectangle(i+s/2,j+s/2,s,s);
@@ -147,8 +147,6 @@ two.bind('update', function(frameCount){
                 }
         }
 });
-
-
 
 
 var pattern= two.makeGroup(array);
