@@ -9,7 +9,7 @@ var two = new Two({
 }).appendTo(document.body);
 
 
-var debug=true;
+var debug=false;
 
 var x= 500;
 var y= 500;
@@ -44,28 +44,93 @@ var handlewidth= 10;
 var handlheight= 40;
 
 //source 1 x handle
-var x1handle = two.makeRectangle(x1,y+side+handlheight/2+3,handlewidth,handlheight).fill='red';
+var x1handle = two.makeRectangle(x1,y+side+handlheight/2+3,handlewidth,handlheight);
+x1handle.fill='red';
+
 
 //source 1 y handle
-var y1handle = two.makeRectangle(x-side-handlheight/2-3,y1,handlheight,handlewidth).fill='red';
+var y1handle = two.makeRectangle(x-side-handlheight/2-3,y1,handlheight,handlewidth);
+y1handle.fill='red';
 
 //source 2 x handle
-var x2handle = two.makeRectangle(x2,y+side+handlheight/2+3,handlewidth,handlheight).fill='yellow';
+var x2handle = two.makeRectangle(x2,y+side+handlheight/2+3,handlewidth,handlheight);
+x2handle.fill='yellow';
 
 //source 2 y handle
-var y2handle = two.makeRectangle(x-side-handlheight/2-3,y2,handlheight,handlewidth).fill='yellow';
+var y2handle = two.makeRectangle(x-side-handlheight/2-3,y2,handlheight,handlewidth);
+y2handle.fill='yellow';
 
 
 
 //create a color grid to represent wave intensity
 var array= [];
-var s=12;
+var s=1;
 for(i=x-side; i<x+side;  i+=s){
         for(j=y-side; j<y+side; j+=s){
                 array[i*2*side+j]=two.makeRectangle(i+s/2,j+s/2,s,s);
         }
 }
-console.log("array made");
+if(debug){console.log("array made")};
+
+
+//make the handles moveable
+two.update();
+var x1moving=false;
+x1handle._renderer.elem.addEventListener('mousedown', function(e) {
+        x1moving=true;
+}, false);
+window.addEventListener('mousemove', function(e) {
+        if(x1moving==true){
+               x1handle.translation.set(Math.max(Math.min(e.clientX,x+side),x-side),y+side+handlheight/2+3);
+               x1=Math.max(Math.min(e.clientX,x+side),x-side);
+        }
+}, false);
+window.addEventListener('mouseup', function(e){
+        x1moving=false;
+}, false);
+
+var x2moving=false;
+x2handle._renderer.elem.addEventListener('mousedown', function(e) {
+        x2moving=true;
+}, false);
+window.addEventListener('mousemove', function(e) {
+        if(x2moving==true){
+               x2handle.translation.set(Math.max(Math.min(e.clientX,x+side),x-side),y+side+handlheight/2+3);
+               x2=Math.max(Math.min(e.clientX,x+side),x-side);
+        }
+}, false);
+window.addEventListener('mouseup', function(e){
+        x2moving=false;
+}, false);
+
+var y1moving=false;
+y1handle._renderer.elem.addEventListener('mousedown', function(e) {
+        y1moving=true;
+}, false);
+window.addEventListener('mousemove', function(e) {
+        if(y1moving==true){
+               y1handle.translation.set(x-side-handlheight/2-3,Math.max(Math.min(e.clientY,y+side),y-side));
+               y1=Math.max(Math.min(e.clientY,y+side),y-side);
+        }
+}, false);
+window.addEventListener('mouseup', function(e){
+        y1moving=false;
+}, false);
+
+var y2moving=false;
+y2handle._renderer.elem.addEventListener('mousedown', function(e) {
+        y2moving=true;
+}, false);
+window.addEventListener('mousemove', function(e) {
+        if(y2moving==true){
+               y2handle.translation.set(x-side-handlheight/2-3,Math.max(Math.min(e.clientY,y+side),y-side));
+               y2=Math.max(Math.min(e.clientY,y+side),y-side);
+        }
+}, false);
+window.addEventListener('mouseup', function(e){
+        y2moving=false;
+}, false);
+
 
 //fill the color grid
 var color;
@@ -76,36 +141,16 @@ two.bind('update', function(frameCount){
         t=two.frameCount;
         for(i=x-side; i<x+side;  i+=s){
                 for(j=y-side; j<y+side; j+=s){
-                        color=255+255*(getPhase(x1,y1,i,j,t)+getPhase(x2,y2,i,j,t))/5;
+                        color=((getPhase(x1,y1,i,j,t)+getPhase(x2,y2,i,j,t))+2)*255/2;
                         //console.log(color);
                         array[i*2*side+j].fill="rgb(0,0,"+color+")";
                 }
         }
 });
 
-//allow handles to be moved
-var mouse= new Two.Vector();
-if(debug){console.log(mouse.x,mouse.y)};
-$(window)
-        .bind('mousedown', function(e) {
-        mouse.set(e.clientX, e.clientY);
-        var handle= inHandle(mouse.x,mouse.y);
-        if(debug){console.log("mousedown")};
-        if(handle){
-        $(window)
-                .bind('mousemove', dragHandle(handle))
-                .bind('mouseup', dragEnd);
-                if(debug){console.log("handle selected")};
-        }
-})
-var dragHandle = function(handle) {
-        handle.translation.set(mouse);
-};
-var dragEnd = function(e) {
-        $(window)
-                .unbind('mousemove', drag)
-                .unbind('mouseup', dragEnd);
-};
+
+
+
 var pattern= two.makeGroup(array);
 //pattern.fill='blue';
 pattern.noStroke();
@@ -120,6 +165,7 @@ function getPhase(xs,ys,x,y,t){
 }
 
 function inHandle(x,y){
+        console.log(x,y,x1handle.x,x1handle.y);
         if((x>x1handle.origin.x-handlewidth)&&(x<x1handle.origin.x+handlewidth)&&(y>x1handle.origin.y-handleheight)&&(y<x1handle.origin.y-handleheight)){
                 return x1handle;
         }
