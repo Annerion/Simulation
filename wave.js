@@ -10,10 +10,11 @@ var two = new Two({
 
 
 var debug=false;
-
-var x= 500;
-var y= 500;
-var side= 300;
+var limit=Math.min($(document).width(),$(document).height())/10;
+if(debug){console.log(limit)};
+var x= limit*5;
+var y= limit*5;
+var side= limit*3;
 
 // wavelength (lambda) in pixels
 var l= 20;
