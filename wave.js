@@ -65,7 +65,7 @@ y2handle.fill='yellow';
 
 //create a color grid to represent wave intensity
 var array= [];
-var s=7;
+var s=limit/100*7;
 for(i=x-side; i<x+side;  i+=s){
         for(j=y-side; j<y+side; j+=s){
                 array[i*2*side+j]=two.makeRectangle(i+s/2,j+s/2,s,s);
@@ -137,12 +137,13 @@ window.addEventListener('mouseup', function(e){
 var color;
 //timer, for the time dependency of the waves
 var t= two.frameCount;
-
+//attenuation, should be a small negative number
+var a= -0.001;
 two.bind('update', function(frameCount){
         t=two.frameCount;
         for(i=x-side; i<x+side;  i+=s){
                 for(j=y-side; j<y+side; j+=s){
-                        color=((getPhase(x1,y1,i,j,t)+getPhase(x2,y2,i,j,t))+2)*255/2;
+                        color=(getPhase(x1,y1,i,j,t)*Math.pow(Math.E,a*distance(x1,y1,x,y)/side)+getPhase(x2,y2,i,j,t)*Math.pow(Math.E,a*distance(x2,y2,x,y)/side)+2)*255/2;
                         //console.log(color);
                         array[i*2*side+j].fill="rgb(0,0,"+color+")";
                 }
