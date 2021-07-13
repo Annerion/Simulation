@@ -26,7 +26,7 @@ var handlewidth= limit/10;
 var handlheight= limit/10*4;
 
 // wavelength (lambda) in pixels
-var l= 20;
+var l= 50;
 var lambdaMessage= two.makeText('wavelength',limit*9,limit*2,styles);
 lambdaMessage.stroke= 'purple';
 lambdaMessage.fill= 'purple';
@@ -37,17 +37,17 @@ lamdaScale.fill=lamdaHandle.fill='purple';
 
 
 // frequency, in waves per frame
-var f=0.1;
-var fMessage= two.makeText('frequency',limit*9,limit*3,styles);
-fMessage.stroke= 'green';
-fMessage.fill= 'green';
-var fScale= two.makeRectangle(limit*9,limit*3.2,2*handlheight, handlewidth/2);
-var fHandle= two.makeRectangle(limit*9,limit*3.4,handlewidth,handlheight);
-fScale.fill=fHandle.fill='green';
+var v=2;
+var vMessage= two.makeText('speed',limit*9,limit*3,styles);
+vMessage.stroke= 'green';
+vMessage.fill= 'green';
+var vScale= two.makeRectangle(limit*9,limit*3.2,2*handlheight, handlewidth/2);
+var vHandle= two.makeRectangle(limit*9,limit*3.4,handlewidth,handlheight);
+vScale.fill=vHandle.fill='green';
 
 
 // wavespeed in pixels per frame
-var v=l*f;
+var f=v/l;
 
 //variables to turn on dippers
 var on1=1;
@@ -95,7 +95,8 @@ var array= [];
 var s=limit/100*7;
 for(i=x-side; i<x+side;  i+=s){
         for(j=y-side; j<y+side; j+=s){
-                array[i*2*side+j]=two.makeRectangle(i+s/2,j+s/2,s,s);
+                array[i*2*side+j]=two.makeRectangle(i+s/2,j+s/2,s+1,s+1);
+                array[i*2*side+j].noStroke();
         }
 }
 if(debug){console.log("array made")};
@@ -112,7 +113,8 @@ window.addEventListener('mousemove', function(e) {
         if(lmoving==true){
                 lx=Math.max(Math.min(e.clientX,limit*9+handlheight),limit*9-handlheight)
                 lamdaHandle.translation.set(lx,limit*2.4);
-                l=(lx-(9*limit-handlheight))/(2*handlheight)*99+1;
+                l=(lx-(9*limit-handlheight))/(2*handlheight)*99+10;
+                f=v/l;
         }
 }, false);
 window.addEventListener('mouseup', function(e){
@@ -120,19 +122,20 @@ window.addEventListener('mouseup', function(e){
        if(debug){console.log(l)};
 }, false);
 
-var fmoving=false;
-fHandle._renderer.elem.addEventListener('mousedown', function(e) {
-        fmoving=true;
+var vmoving=false;
+vHandle._renderer.elem.addEventListener('mousedown', function(e) {
+        vmoving=true;
 }, false);
 window.addEventListener('mousemove', function(e) {
-        if(fmoving==true){
-                fx=Math.max(Math.min(e.clientX,limit*9+handlheight),limit*9-handlheight)
-                fHandle.translation.set(fx,limit*3.4);
-                f=(fx-(9*limit-handlheight))/(2*handlheight)*0.5;
+        if(vmoving==true){
+                vx=Math.max(Math.min(e.clientX,limit*9+handlheight),limit*9-handlheight)
+                vHandle.translation.set(vx,limit*3.4);
+                v=(vx-(9*limit-handlheight))/(2*handlheight)*4;
+                f=v/l;
         }
 }, false);
 window.addEventListener('mouseup', function(e){
-       fmoving=false;
+       vmoving=false;
        if(debug){console.log(f)};
 }, false);
 
@@ -221,14 +224,14 @@ var color;
 //timer, for the time dependency of the waves
 var t= two.frameCount;
 //attenuation, should be a small negative number
-var a= -0.5;
+var a= -2;
 
 
 two.bind('update', function(frameCount){
         t=two.frameCount;
         for(i=x-side; i<x+side;  i+=s){
                 for(j=y-side; j<y+side; j+=s){
-                        color=(on1*getPhase(x1,y1,i,j,t)*Math.pow(Math.E,a*distance(x1,y1,x,y)/side)+on2*getPhase(x2,y2,i,j,t)*Math.pow(Math.E,a*distance(x2,y2,x,y)/side)+2)*255/(2);
+                        color=(on1*getPhase(x1,y1,i,j,t)*Math.pow(Math.E,a*distance(x1,y1,i,j)/side)+on2*getPhase(x2,y2,i,j,t)*Math.pow(Math.E,a*distance(x2,y2,i,j)/side)+1)*255/(2);
                         //console.log(color);
                         array[i*2*side+j].fill="rgb(0,0,"+color+")";
                 }
@@ -246,15 +249,8 @@ function distance(xs,ys,x,y){
 }
 
 function getPhase(xs,ys,x,y,t){
-        return Math.sin(2*Math.PI*(distance(xs,ys,x,y)/l+f*t));
+        return Math.sin(2*Math.PI*(distance(xs,ys,x,y)/l-f*t));
 }
 
-function inHandle(x,y){
-        console.log(x,y,x1handle.x,x1handle.y);
-        if((x>x1handle.origin.x-handlewidth)&&(x<x1handle.origin.x+handlewidth)&&(y>x1handle.origin.y-handleheight)&&(y<x1handle.origin.y-handleheight)){
-                return x1handle;
-        }
-        return null;
-}
 if(debug){console.log(two.playing)};
 two.play();
